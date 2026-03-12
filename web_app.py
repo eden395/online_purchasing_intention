@@ -5,7 +5,11 @@ import joblib
 # -----------------------------
 # Load model and feature columns
 # -----------------------------
-model, feature_columns = joblib.load("purchase_intention_model.pkl")
+@st.cache_resource
+def load_model():
+    return joblib.load("purchase_intention_model.pkl")
+
+model, feature_columns = load_model()
 
 st.set_page_config(
     page_title="Online Purchase Intention Predictor",
