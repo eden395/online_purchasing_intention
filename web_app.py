@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -205,4 +205,4 @@ if predict_button:
     }).sort_values(by="Importance", ascending=False)
 
     st.bar_chart(importance.head(5).set_index("Feature"))
-```
+
