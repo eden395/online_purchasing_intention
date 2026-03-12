@@ -14,7 +14,7 @@ model, feature_columns = load_model()
 st.set_page_config(
     page_title="Online Purchase Intention Predictor",
     page_icon="🛒",
-    layout="wide"
+    layout="centered"
 )
 
 st.title("🛒 Online Purchase Intention Prediction System")
@@ -23,65 +23,57 @@ st.caption("Predict whether a website visitor is likely to make a purchase based
 st.divider()
 
 # -----------------------------
-# INPUT SECTIONS IN ONE ROW
+# Browsing Activity
 # -----------------------------
-col1, col2, col3 = st.columns(3)
+st.header("Browsing Activity")
 
-# -----------------------------
-# Browsing Behaviour
-# -----------------------------
-with col1:
-    st.subheader("Browsing Activity")
+administrative = st.number_input("Administrative Pages", min_value=0, value=2)
+admin_duration = st.number_input("Administrative Duration", min_value=0.0, value=30.0)
 
-    administrative = st.number_input("Administrative Pages", min_value=0, value=2)
-    admin_duration = st.number_input("Administrative Duration", min_value=0.0, value=30.0)
+informational = st.number_input("Informational Pages", min_value=0, value=1)
+info_duration = st.number_input("Informational Duration", min_value=0.0, value=20.0)
 
-    informational = st.number_input("Informational Pages", min_value=0, value=1)
-    info_duration = st.number_input("Informational Duration", min_value=0.0, value=20.0)
+product_pages = st.number_input("Product Pages", min_value=0, value=10)
+product_duration = st.number_input("Product Duration", min_value=0.0, value=500.0)
 
-    product_pages = st.number_input("Product Pages", min_value=0, value=10)
-    product_duration = st.number_input("Product Duration", min_value=0.0, value=500.0)
+bounce_rate = st.number_input("Bounce Rate", min_value=0.0, max_value=1.0, value=0.2)
+exit_rate = st.number_input("Exit Rate", min_value=0.0, max_value=1.0, value=0.2)
 
-    bounce_rate = st.number_input("Bounce Rate", min_value=0.0, max_value=1.0, value=0.2)
-    exit_rate = st.number_input("Exit Rate", min_value=0.0, max_value=1.0, value=0.2)
+page_value = st.number_input("Page Value", min_value=0.0, value=50.0)
+special_day = st.number_input("Special Day Score", min_value=0.0, max_value=1.0, value=0.0)
 
-    page_value = st.number_input("Page Value", min_value=0.0, value=50.0)
-    special_day = st.number_input("Special Day Score", min_value=0.0, max_value=1.0, value=0.0)
-
-# -----------------------------
-# Technical Information
-# -----------------------------
-with col2:
-    st.subheader("Technical Information")
-
-    operating_system = st.selectbox("Operating System", list(range(1,9)))
-    browser = st.selectbox("Browser", list(range(1,14)))
-    region = st.selectbox("Region", list(range(1,10)))
-    traffic_type = st.selectbox("Traffic Type", list(range(1,21)))
+st.divider()
 
 # -----------------------------
 # Visitor Information
 # -----------------------------
-with col3:
-    st.subheader("Visitor Information")
+st.header("Visitor Information")
 
-    visitor_type = st.selectbox(
-        "Visitor Type",
-        ["New Visitor","Returning Visitor"]
-    )
+visitor_type = st.selectbox(
+    "Visitor Type",
+    ["New Visitor","Returning Visitor"]
+)
 
-    weekend = st.selectbox(
-        "Weekend Visit",
-        ["No","Yes"]
-    )
+weekend = st.selectbox(
+    "Weekend Visit",
+    ["No","Yes"]
+)
 
-    month = st.selectbox(
-        "Month",
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    )
+month = st.selectbox(
+    "Month",
+    ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+)
 
 visitor_returning = 1 if visitor_type == "Returning Visitor" else 0
 weekend_value = 1 if weekend == "Yes" else 0
+
+# -----------------------------
+# Default Technical Info
+# -----------------------------
+operating_system = 2   # Windows
+browser = 2            # Chrome
+region = 1             # Asia
+traffic_type = 2       # Default recommended
 
 # -----------------------------
 # Month Encoding
@@ -99,7 +91,7 @@ if month != "Jan":
 st.divider()
 
 # -----------------------------
-# Prediction Button
+# Prediction
 # -----------------------------
 if st.button("🔍 Predict Purchase Intention", use_container_width=True):
 
@@ -130,13 +122,8 @@ if st.button("🔍 Predict Purchase Intention", use_container_width=True):
 
     st.subheader("Prediction Result")
 
-    colA, colB = st.columns(2)
-
-    with colA:
-        st.metric("Purchase Probability", f"{probability*100:.2f}%")
-
-    with colB:
-        st.progress(float(probability))
+    st.metric("Purchase Probability", f"{probability*100:.2f}%")
+    st.progress(float(probability))
 
     if prediction == 1:
         st.success("Customer is likely to PURCHASE.")
