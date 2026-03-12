@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 import pandas as pd
 import joblib
@@ -51,12 +52,12 @@ st.header("Visitor Information")
 
 visitor_type = st.selectbox(
     "Visitor Type",
-    ["New Visitor","Returning Visitor"]
+    ["New Visitor", "Returning Visitor"]
 )
 
 weekend = st.selectbox(
     "Weekend Visit",
-    ["No","Yes"]
+    ["No", "Yes"]
 )
 
 month = st.selectbox(
@@ -73,7 +74,7 @@ weekend_value = 1 if weekend == "Yes" else 0
 operating_system = 2   # Windows
 browser = 2            # Chrome
 region = 1             # Asia
-traffic_type = 2       # Default recommended
+traffic_type = 2       # Default value
 
 # -----------------------------
 # Month Encoding
@@ -91,9 +92,21 @@ if month != "Jan":
 st.divider()
 
 # -----------------------------
+# Buttons
+# -----------------------------
+col1, col2 = st.columns(2)
+
+with col1:
+    predict_button = st.button("🔍 Predict Purchase Intention", use_container_width=True)
+
+with col2:
+    if st.button("Reset Inputs", use_container_width=True):
+        st.rerun()
+
+# -----------------------------
 # Prediction
 # -----------------------------
-if st.button("🔍 Predict Purchase Intention", use_container_width=True):
+if predict_button:
 
     input_data = pd.DataFrame([{
         "Administrative": administrative,
@@ -120,6 +133,9 @@ if st.button("🔍 Predict Purchase Intention", use_container_width=True):
     prediction = model.predict(input_data)[0]
     probability = model.predict_proba(input_data)[0][1]
 
+    # -----------------------------
+    # Prediction Result
+    # -----------------------------
     st.subheader("Prediction Result")
 
     st.metric("Purchase Probability", f"{probability*100:.2f}%")
@@ -132,6 +148,55 @@ if st.button("🔍 Predict Purchase Intention", use_container_width=True):
         st.error("Customer is UNLIKELY to purchase.")
         st.info("Recommendation: Provide discount coupons or promotional offers.")
 
+    # -----------------------------
+    # Customer Behavior Summary
+    # -----------------------------
+    st.subheader("Customer Behavior Summary")
+
+    summary_points = []
+
+    if product_pages > 30:
+        summary_points.append("Customer viewed many product pages.")
+
+    if product_duration > 1500:
+        summary_points.append("Customer spent significant time browsing products.")
+
+    if bounce_rate < 0.05:
+        summary_points.append("Low bounce rate indicates strong engagement.")
+
+    if visitor_returning == 1:
+        summary_points.append("Customer is a returning visitor.")
+
+    if page_value > 200:
+        summary_points.append("High page value suggests strong purchase intent.")
+
+    if not summary_points:
+        summary_points.append("Browsing behavior indicates limited purchase engagement.")
+
+    for point in summary_points:
+        st.write(f"• {point}")
+
+    # -----------------------------
+    # Business Insight Panel
+    # -----------------------------
+    st.subheader("Business Insight")
+
+    if prediction == 1:
+        st.info(
+            "This visitor shows strong indicators of purchase intent. "
+            "Businesses should consider offering product bundles, premium items, "
+            "or cross-selling recommendations to maximize revenue."
+        )
+    else:
+        st.warning(
+            "This visitor currently shows low purchase intent. "
+            "Offering discount coupons, limited-time promotions, "
+            "or personalized recommendations may help encourage a purchase."
+        )
+
+    # -----------------------------
+    # Feature Importance
+    # -----------------------------
     st.subheader("Top Influential Factors")
 
     importance = pd.DataFrame({
@@ -140,3 +205,4 @@ if st.button("🔍 Predict Purchase Intention", use_container_width=True):
     }).sort_values(by="Importance", ascending=False)
 
     st.bar_chart(importance.head(5).set_index("Feature"))
+```
